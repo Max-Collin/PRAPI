@@ -43,9 +43,10 @@ AEnemyAIController::AEnemyAIController()
 
 void AEnemyAIController::OnTargetPerceptionUpdate(AActor* PerceviedActor,FAIStimulus Stimulus)
 {
-	UE_LOG(LogTemp,Warning,TEXT("actor seen"))
+	
 	if(Stimulus.Type == UAISense::GetSenseID<UAISense_Sight>())
 	{
+		UE_LOG(LogTemp,Warning,TEXT("actor seen"))
 		if(BlackboardComponent)
 		{
 			BlackboardComponent->SetValueAsObject("ChaseTarget",PerceviedActor);
@@ -54,8 +55,9 @@ void AEnemyAIController::OnTargetPerceptionUpdate(AActor* PerceviedActor,FAIStim
 	}
 	else if(Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>())
 	{
-		
+		UE_LOG(LogTemp,Warning,TEXT("actor heard"))
 		BlackboardComponent->SetValueAsVector("InvestigationTarget",Stimulus.StimulusLocation);
+		
 	}
 	
 	

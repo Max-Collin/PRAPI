@@ -3,7 +3,7 @@
 
 #include "Item/Throwable.h"
 
-#include "IDetailTreeNode.h"
+
 #include "Components/SphereComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Hearing.h"
@@ -27,17 +27,18 @@ void AThrowable::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//ItemMesh->OnComponentHit.AddDynamic(this,&AThrowable::OnSphereHit);
+	ItemMesh->OnComponentHit.AddDynamic(this,&AThrowable::OnSphereHit);
 }
 
 void AThrowable::OnSphereHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
+	
 	if(DoOnce_Hit)
 	{
-		UAISense_Hearing::ReportNoiseEvent(this,Hit.Location,100,nullptr,1000);
+		UAISense_Hearing::ReportNoiseEvent(this,Hit.Location,100,this,-1);
 		DoOnce_Hit = false;
-		UE_LOG(LogTemp,Warning,TEXT("hit"))
+		UE_LOG(LogTemp, Warning, TEXT("OnSphereHit called. HitComponent: %s"), *OtherActor->GetName());
 	}
 
 	
