@@ -31,5 +31,6 @@ protected:
 	TArray<AActor*> PatrolTargets;
 		
 
-	
+public:
+	FORCEINLINE AActor* GetPatrolTarget() const {return PatrolTarget;}
 };
