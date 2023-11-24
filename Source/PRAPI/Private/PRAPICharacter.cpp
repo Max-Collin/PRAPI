@@ -6,8 +6,11 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Item/Throwable.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 APRAPICharacter::APRAPICharacter()
@@ -29,6 +32,12 @@ APRAPICharacter::APRAPICharacter()
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
 	ViewCamera->SetupAttachment(SpringArm);
 
+}
+
+void APRAPICharacter::SetOverlappingItem(AItem* Item)
+{
+	IPickUpInterface::SetOverlappingItem(Item);
+	OverlappingItem= Item;
 }
 
 // Called when the game starts or when spawned
@@ -69,6 +78,42 @@ void APRAPICharacter::Look(const FInputActionValue& Value)
 	AddControllerYawInput(LookAxisVector.X);
 }
 
+void APRAPICharacter::Equip()
+{
+	
+	if(OverlappingItem)
+	{
+		AThrowable* OverlappingThrowable = Cast<AThrowable>(OverlappingItem);
+		if(OverlappingThrowable)
+		{
+			OverlappingThrowable->Equip(GetMesh(),FName("RightHandSocket"));
+			EquippedThrowable = OverlappingThrowable;
+		}
+		
+		
+		
+		
+		
+	}
+
+	
+}
+
+void APRAPICharacter::Throw()
+{
+	if(EquippedThrowable)
+	{
+		EquippedThrowable->DetachMeshFromSocket();
+		const FVector UnitDirection = UKismetMathLibrary::GetDirectionUnitVector(GetActorLocation(),EquippedThrowable->GetActorLocation());
+		EquippedThrowable->GetMesh()->SetPhysicsLinearVelocity(GetCapsuleComponent()->GetForwardVector()*800);
+		EquippedThrowable->GetMesh()->SetEnableGravity(true);
+	}
+	
+
+
+	
+}
+
 
 // Called every frame
 void APRAPICharacter::Tick(float DeltaTime)
@@ -87,7 +132,8 @@ void APRAPICharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(MovementAction,ETriggerEvent::Triggered,this,&APRAPICharacter::Move);
 
 		EnhancedInputComponent->BindAction(LookAction,ETriggerEvent::Triggered,this,&APRAPICharacter::Look);
-		
+		EnhancedInputComponent->BindAction(EquipAction,ETriggerEvent::Started,this,&APRAPICharacter::Equip);
+		EnhancedInputComponent->BindAction(ThrowAction,ETriggerEvent::Started,this,&APRAPICharacter::Throw);
 	}
 	
 }

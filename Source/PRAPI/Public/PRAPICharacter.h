@@ -6,20 +6,24 @@
 #include "BaseCharacter.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Interfaces/PickUpInterface.h"
 
 #include "PRAPICharacter.generated.h"
 
+class AThrowable;
 class UInputAction;
 class UInputMappingContext;
 class UCameraComponent;
 class USpringArmComponent;
 UCLASS()
-class PRAPI_API APRAPICharacter : public ABaseCharacter
+class PRAPI_API APRAPICharacter : public ABaseCharacter , public IPickUpInterface
 {
 	GENERATED_BODY()
 public:
 	// Sets default values for this character's properties
 	APRAPICharacter();
+
+	virtual void SetOverlappingItem(AItem* Item) override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -34,17 +38,28 @@ protected:
 	UPROPERTY(EditAnywhere,Category = Input)
 		TObjectPtr<UInputAction> MovementAction;
 	UPROPERTY(EditAnywhere,Category = Input)
-			TObjectPtr<UInputAction> LookAction;
-	
+		TObjectPtr<UInputAction> LookAction;
+	UPROPERTY(EditAnywhere,Category = Input)
+		TObjectPtr<UInputAction> EquipAction;
+	UPROPERTY(EditAnywhere,Category = Input)
+		TObjectPtr<UInputAction> ThrowAction;
 	
 	void Move(const FInputActionValue& Value);
     void Look(const FInputActionValue& Value);
     
 private:
+
+	void Equip();
+	void Throw();
+	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USpringArmComponent> SpringArm;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCameraComponent> ViewCamera;
+	UPROPERTY(VisibleInstanceOnly)
+	TObjectPtr<AItem> OverlappingItem;
+	UPROPERTY(VisibleInstanceOnly)
+	TObjectPtr<AThrowable> EquippedThrowable;
     	
 public:	
 	// Called every frame

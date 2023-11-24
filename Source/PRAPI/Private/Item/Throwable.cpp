@@ -16,18 +16,38 @@ AThrowable::AThrowable()
 	AIPerceptionStimuliSourceComponent->bAutoRegister=1;
 	AIPerceptionStimuliSourceComponent->RegisterForSense(UAISense_Hearing::StaticClass());
 
-	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
-	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMesh"));
-	RootComponent = ItemMesh;
-	SphereCollision->SetupAttachment(GetRootComponent());
 	
+	
+}
+
+void AThrowable::Equip(USceneComponent* InParent,FName InSocketName)
+{
+
+	AttachMeshToSocket(InParent, InSocketName);
+	ItemMesh->SetEnableGravity(false);
+
+	
+}
+
+void AThrowable::DetachMeshFromSocket()
+{
+	FDetachmentTransformRules TransformRules(EDetachmentRule::KeepWorld,true);
+	ItemMesh->DetachFromComponent(TransformRules);
+}
+
+
+void AThrowable::AttachMeshToSocket(TObjectPtr<USceneComponent>  InParent, FName InSocketName)
+{
+	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget,true);
+	ItemMesh->AttachToComponent(InParent,TransformRules,InSocketName);
 }
 
 void AThrowable::BeginPlay()
 {
 	Super::BeginPlay();
-
+	ItemMesh->SetEnableGravity(true);
 	ItemMesh->OnComponentHit.AddDynamic(this,&AThrowable::OnSphereHit);
+	
 }
 
 void AThrowable::OnSphereHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
