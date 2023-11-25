@@ -36,9 +36,10 @@ private:
 	
 
 
-	bool DoOnce_Hit = true;
+	bool DoOnce_Hit = false;
 	
-
+public:
+	FORCEINLINE void Reset_DoOnce_Hit()  { DoOnce_Hit =true;}
 	
 	
 };

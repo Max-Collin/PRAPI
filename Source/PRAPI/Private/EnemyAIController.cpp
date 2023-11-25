@@ -18,8 +18,8 @@ AEnemyAIController::AEnemyAIController()
 	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"));
 
 	Sight=CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Config"));
-	Sight->SightRadius=500.f;
-	Sight->LoseSightRadius=500.f;
+	Sight->SightRadius=1000.f;
+	Sight->LoseSightRadius=1500.f;
 	Sight->PeripheralVisionAngleDegrees = 60.f;
 	Sight->DetectionByAffiliation.bDetectEnemies=true;
 	Sight->DetectionByAffiliation.bDetectNeutrals=true;
@@ -35,7 +35,7 @@ AEnemyAIController::AEnemyAIController()
 	AAIController::GetPerceptionComponent()->ConfigureSense(*Hear);
 	AAIController::GetPerceptionComponent()->SetDominantSense(*Sight->GetSenseImplementation());
 	AAIController::GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this,&AEnemyAIController::OnTargetPerceptionUpdate);
-
+	
 	
 
 	
@@ -43,22 +43,27 @@ AEnemyAIController::AEnemyAIController()
 
 void AEnemyAIController::OnTargetPerceptionUpdate(AActor* PerceviedActor,FAIStimulus Stimulus)
 {
+	if(PerceviedActor)
+	{
+		if(Stimulus.Type == UAISense::GetSenseID<UAISense_Sight>())
+        	{
+        		UE_LOG(LogTemp,Warning,TEXT("actor seen"))
+        		if(BlackboardComponent)
+        		{
+        			BlackboardComponent->SetValueAsObject("ChaseTarget",PerceviedActor);
+        			BlackboardComponent->SetValueAsVector("ChaseTargetLocation",PerceviedActor->GetActorLocation());
+        		}
+        		
+        	}
+        	else if(Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>())
+        	{
+        		UE_LOG(LogTemp,Warning,TEXT("actor heard"))
+        		BlackboardComponent->SetValueAsVector("InvestigationTarget",Stimulus.StimulusLocation);
+        		
+        	}
+	}
 	
-	if(Stimulus.Type == UAISense::GetSenseID<UAISense_Sight>())
-	{
-		UE_LOG(LogTemp,Warning,TEXT("actor seen"))
-		if(BlackboardComponent)
-		{
-			BlackboardComponent->SetValueAsObject("ChaseTarget",PerceviedActor);
-		}
-		
-	}
-	else if(Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>())
-	{
-		UE_LOG(LogTemp,Warning,TEXT("actor heard"))
-		BlackboardComponent->SetValueAsVector("InvestigationTarget",Stimulus.StimulusLocation);
-		
-	}
+	
 	
 	
 }

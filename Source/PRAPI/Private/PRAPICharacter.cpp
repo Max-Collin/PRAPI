@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Item/Throwable.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -31,6 +32,9 @@ APRAPICharacter::APRAPICharacter()
 	
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
 	ViewCamera->SetupAttachment(SpringArm);
+
+	ThrowStartLocation = CreateDefaultSubobject<UChildActorComponent>(TEXT("ThrowStartLocation"));
+	ThrowStartLocation->SetupAttachment(GetRootComponent());
 
 }
 
@@ -99,15 +103,49 @@ void APRAPICharacter::Equip()
 	
 }
 
+void APRAPICharacter::PlayThrowAction()
+{
+	if(EquippedThrowable&&AM_Throw)
+	{
+		PlayAnimMontage(AM_Throw);
+	}
+	
+	
+}
+
+void APRAPICharacter::Aim()
+{
+	FPredictProjectilePathParams ProjectilePathParams;
+	FPredictProjectilePathResult ProjectilePathResult;
+
+
+	ProjectilePathParams.StartLocation = ThrowStartLocation->GetComponentLocation();
+	FVector UnitDirection =UKismetMathLibrary::GetDirectionUnitVector(GetActorLocation(),ThrowStartLocation->GetComponentLocation());
+	
+	FVector ForwardVector = GetCapsuleComponent()->GetForwardVector();
+	FVector LaunchVelocity = UnitDirection* ThrowSpeed;
+	ProjectilePathParams.LaunchVelocity = LaunchVelocity;
+	ProjectilePathParams.SimFrequency = 15;
+	ProjectilePathParams.DrawDebugType = EDrawDebugTrace::ForOneFrame;
+	ProjectilePathParams.bTraceWithCollision =true;
+	
+	UGameplayStatics::PredictProjectilePath(this,ProjectilePathParams,ProjectilePathResult);
+	UE_LOG(LogTemp,Warning,TEXT("Aim"));
+
+	//FVector(ForwardVector.X,ForwardVector.Y,ForwardVector.Z=50)
+}
+
 void APRAPICharacter::Throw()
 {
-	if(EquippedThrowable)
-	{
+		EquippedThrowable->Reset_DoOnce_Hit();
 		EquippedThrowable->DetachMeshFromSocket();
-		const FVector UnitDirection = UKismetMathLibrary::GetDirectionUnitVector(GetActorLocation(),EquippedThrowable->GetActorLocation());
-		EquippedThrowable->GetMesh()->SetPhysicsLinearVelocity(GetCapsuleComponent()->GetForwardVector()*800);
 		EquippedThrowable->GetMesh()->SetEnableGravity(true);
-	}
+		const FVector UnitDirection = UKismetMathLibrary::GetDirectionUnitVector(GetActorLocation(),EquippedThrowable->GetActorLocation());
+		FVector LaunchVelocity = UnitDirection* ThrowSpeed;
+		EquippedThrowable->GetMesh()->SetPhysicsLinearVelocity(LaunchVelocity);
+		EquippedThrowable->GetMesh()->SetEnableGravity(true);
+		EquippedThrowable = nullptr;
+	
 	
 
 
@@ -133,7 +171,8 @@ void APRAPICharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 		EnhancedInputComponent->BindAction(LookAction,ETriggerEvent::Triggered,this,&APRAPICharacter::Look);
 		EnhancedInputComponent->BindAction(EquipAction,ETriggerEvent::Started,this,&APRAPICharacter::Equip);
-		EnhancedInputComponent->BindAction(ThrowAction,ETriggerEvent::Started,this,&APRAPICharacter::Throw);
+		EnhancedInputComponent->BindAction(ThrowAction,ETriggerEvent::Started,this,&APRAPICharacter::PlayThrowAction);
+		EnhancedInputComponent->BindAction(AimAction,ETriggerEvent::Triggered,this,&APRAPICharacter::Aim);
 	}
 	
 }

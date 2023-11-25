@@ -22,6 +22,9 @@ class PRAPI_API APRAPICharacter : public ABaseCharacter , public IPickUpInterfac
 public:
 	// Sets default values for this character's properties
 	APRAPICharacter();
+	
+	UFUNCTION(BlueprintCallable)
+	void Throw();
 
 	virtual void SetOverlappingItem(AItem* Item) override;
 
@@ -32,6 +35,11 @@ protected:
 	/**
 	 * Inputs
 	 */
+	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+	void Equip();
+	void PlayThrowAction();
+	void Aim();
 	
 	UPROPERTY(EditAnywhere,Category = Input)
 		TObjectPtr<UInputMappingContext> IMC_PRAPI;
@@ -43,14 +51,22 @@ protected:
 		TObjectPtr<UInputAction> EquipAction;
 	UPROPERTY(EditAnywhere,Category = Input)
 		TObjectPtr<UInputAction> ThrowAction;
+	UPROPERTY(EditAnywhere,Category = Input)
+	TObjectPtr<UInputAction> AimAction;
 	
-	void Move(const FInputActionValue& Value);
-    void Look(const FInputActionValue& Value);
-    
+	/**
+	 * Animations 
+	 */
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAnimMontage> AM_Throw;
+	
+	UPROPERTY(EditAnywhere)
+	float ThrowSpeed=800;
 private:
 
-	void Equip();
-	void Throw();
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UChildActorComponent> ThrowStartLocation;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USpringArmComponent> SpringArm;
