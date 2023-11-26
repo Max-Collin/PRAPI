@@ -25,7 +25,8 @@ void AThrowable::Equip(USceneComponent* InParent,FName InSocketName)
 
 	AttachMeshToSocket(InParent, InSocketName);
 	ItemMesh->SetEnableGravity(false);
-
+	ItemMesh->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+	ItemMesh->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 	
 }
 

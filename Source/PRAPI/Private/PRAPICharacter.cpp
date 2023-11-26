@@ -120,17 +120,45 @@ void APRAPICharacter::Aim()
 
 
 	ProjectilePathParams.StartLocation = ThrowStartLocation->GetComponentLocation();
-	FVector UnitDirection =UKismetMathLibrary::GetDirectionUnitVector(GetActorLocation(),ThrowStartLocation->GetComponentLocation());
 	
+	float PlayerPitch ;
+	FVector LaunchVelocity;
+	if(GetControlRotation().Pitch>=270)
+	{
+		PlayerPitch = (GetControlRotation().Pitch-270)/110;
+		//FVector ForwardVector = GetCapsuleComponent()->GetForwardVector();
+		//LaunchVelocity = ForwardVector* ThrowSpeed *PlayerPitch +10 ;
+	}
+	else
+	{
+		PlayerPitch = (GetControlRotation().Pitch+90)/110;
+		
+	
+	}
+	PlayerPitch = FMath::Clamp(PlayerPitch,0.01,1.2);
+	FVector UnitDirection =UKismetMathLibrary::GetDirectionUnitVector(GetActorLocation(),ThrowStartLocation->GetComponentLocation());
 	FVector ForwardVector = GetCapsuleComponent()->GetForwardVector();
-	FVector LaunchVelocity = UnitDirection* ThrowSpeed;
+	LaunchVelocity = UnitDirection* ThrowSpeed ;
+	float PitchvelocityX =  PlayerPitch*2-FMath::Cube(PlayerPitch);
+	LaunchVelocity = FVector(LaunchVelocity.X*PitchvelocityX,LaunchVelocity.Y*PitchvelocityX,FMath::Pow(LaunchVelocity.Z,PlayerPitch));
+	
+	
 	ProjectilePathParams.LaunchVelocity = LaunchVelocity;
-	ProjectilePathParams.SimFrequency = 15;
+	ProjectilePathParams.SimFrequency = 30;
 	ProjectilePathParams.DrawDebugType = EDrawDebugTrace::ForOneFrame;
 	ProjectilePathParams.bTraceWithCollision =true;
 	
 	UGameplayStatics::PredictProjectilePath(this,ProjectilePathParams,ProjectilePathResult);
 	UE_LOG(LogTemp,Warning,TEXT("Aim"));
+
+	
+FString String = FString::Printf(TEXT("%f"),GetControlRotation().Pitch);
+	FString String2 = FString::Printf(TEXT("%f"),PlayerPitch);
+	if(GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1,0.1f,FColor::Red,String);
+		GEngine->AddOnScreenDebugMessage(2,0.1f,FColor::Blue,String2);
+	}
 
 	//FVector(ForwardVector.X,ForwardVector.Y,ForwardVector.Z=50)
 }
@@ -140,8 +168,26 @@ void APRAPICharacter::Throw()
 		EquippedThrowable->Reset_DoOnce_Hit();
 		EquippedThrowable->DetachMeshFromSocket();
 		EquippedThrowable->GetMesh()->SetEnableGravity(true);
-		const FVector UnitDirection = UKismetMathLibrary::GetDirectionUnitVector(GetActorLocation(),EquippedThrowable->GetActorLocation());
-		FVector LaunchVelocity = UnitDirection* ThrowSpeed;
+	float PlayerPitch ;
+	FVector LaunchVelocity;
+	if(GetControlRotation().Pitch>=270)
+	{
+		PlayerPitch = (GetControlRotation().Pitch-270)/110;
+		//FVector ForwardVector = GetCapsuleComponent()->GetForwardVector();
+		//LaunchVelocity = ForwardVector* ThrowSpeed *PlayerPitch +10 ;
+	}
+	else
+	{
+		PlayerPitch = (GetControlRotation().Pitch+90)/110;
+		
+	
+	}
+	PlayerPitch = FMath::Clamp(PlayerPitch,0.01,1.2);
+	FVector UnitDirection =UKismetMathLibrary::GetDirectionUnitVector(GetActorLocation(),ThrowStartLocation->GetComponentLocation());
+	FVector ForwardVector = GetCapsuleComponent()->GetForwardVector();
+	LaunchVelocity = UnitDirection* ThrowSpeed ;
+	float PitchvelocityX =  PlayerPitch*2-FMath::Cube(PlayerPitch);
+	LaunchVelocity = FVector(LaunchVelocity.X*PitchvelocityX,LaunchVelocity.Y*PitchvelocityX,FMath::Pow(LaunchVelocity.Z,PlayerPitch));
 		EquippedThrowable->GetMesh()->SetPhysicsLinearVelocity(LaunchVelocity);
 		EquippedThrowable->GetMesh()->SetEnableGravity(true);
 		EquippedThrowable = nullptr;
