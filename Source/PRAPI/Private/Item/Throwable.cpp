@@ -5,6 +5,7 @@
 
 
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Hearing.h"
 
@@ -51,8 +52,21 @@ void AThrowable::BeginPlay()
 	
 }
 
+void AThrowable::PlayHitSound(const FVector& ImpactPoint)
+{
+	
+	if (HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			HitSound,
+			ImpactPoint
+		);
+	}
+}
+
 void AThrowable::OnSphereHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse, const FHitResult& Hit)
+                             FVector NormalImpulse, const FHitResult& Hit)
 {
 	
 	if(DoOnce_Hit)
@@ -60,6 +74,7 @@ void AThrowable::OnSphereHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 		UAISense_Hearing::ReportNoiseEvent(this,Hit.Location,100,this,-1);
 		DoOnce_Hit = false;
 		UE_LOG(LogTemp, Warning, TEXT("OnSphereHit called. HitComponent: %s"), *OtherActor->GetName());
+		PlayHitSound(Hit.Location);
 	}
 
 	

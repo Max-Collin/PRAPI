@@ -46,6 +46,8 @@ private:
 	UFUNCTION()
 	void OnTargetPerceptionUpdate(AActor* SeenActor,FAIStimulus Stimulus);
 
+	
+
 
 public:
 	FORCEINLINE UBlackboardComponent* GetBlackboardComponent() const {return  BlackboardComponent;}

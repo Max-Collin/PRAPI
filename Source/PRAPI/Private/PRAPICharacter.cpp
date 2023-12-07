@@ -115,6 +115,7 @@ void APRAPICharacter::PlayThrowAction()
 
 void APRAPICharacter::Aim()
 {
+	if(!EquippedThrowable)return;
 	FPredictProjectilePathParams ProjectilePathParams;
 	FPredictProjectilePathResult ProjectilePathResult;
 
@@ -161,6 +162,35 @@ FString String = FString::Printf(TEXT("%f"),GetControlRotation().Pitch);
 	}
 
 	//FVector(ForwardVector.X,ForwardVector.Y,ForwardVector.Z=50)
+}
+
+void APRAPICharacter::Crouch()
+{
+	PlayCrouchAnimations();
+	if(GetCharacterMovement()->bWantsToCrouch==true)
+	{
+		GetCharacterMovement()->bWantsToCrouch=false;
+	}
+	else
+	{
+		
+		GetCharacterMovement()->bWantsToCrouch=true;
+	}
+	
+
+	
+}
+
+void APRAPICharacter::PlayCrouchAnimations()
+{
+	if(GetCharacterMovement()->bWantsToCrouch==true)
+	{
+		PlayAnimMontage(AM_Crouch,1,FName("ToStanding"));
+	}
+	else
+	{
+		PlayAnimMontage(AM_Crouch,1,FName("ToCrouch"));
+	}
 }
 
 void APRAPICharacter::Throw()
@@ -219,6 +249,9 @@ void APRAPICharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(EquipAction,ETriggerEvent::Started,this,&APRAPICharacter::Equip);
 		EnhancedInputComponent->BindAction(ThrowAction,ETriggerEvent::Started,this,&APRAPICharacter::PlayThrowAction);
 		EnhancedInputComponent->BindAction(AimAction,ETriggerEvent::Triggered,this,&APRAPICharacter::Aim);
+		EnhancedInputComponent->BindAction(JumpAction,ETriggerEvent::Started ,this,&ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction,ETriggerEvent::Completed ,this,&ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(CrouchAction,ETriggerEvent::Started ,this,&APRAPICharacter::Crouch);
 	}
 	
 }

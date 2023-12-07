@@ -40,25 +40,45 @@ protected:
 	void Equip();
 	void PlayThrowAction();
 	void Aim();
+	void Crouch();
 	
 	UPROPERTY(EditAnywhere,Category = Input)
 		TObjectPtr<UInputMappingContext> IMC_PRAPI;
+		
 	UPROPERTY(EditAnywhere,Category = Input)
 		TObjectPtr<UInputAction> MovementAction;
+		
 	UPROPERTY(EditAnywhere,Category = Input)
 		TObjectPtr<UInputAction> LookAction;
+		
+	UPROPERTY(EditAnywhere,Category = Input)
+        TObjectPtr<UInputAction> JumpAction;
+        
 	UPROPERTY(EditAnywhere,Category = Input)
 		TObjectPtr<UInputAction> EquipAction;
+		
 	UPROPERTY(EditAnywhere,Category = Input)
 		TObjectPtr<UInputAction> ThrowAction;
+		
 	UPROPERTY(EditAnywhere,Category = Input)
-	TObjectPtr<UInputAction> AimAction;
+		TObjectPtr<UInputAction> AimAction;
+		
+	UPROPERTY(EditAnywhere,Category = Input)
+		TObjectPtr<UInputAction> CrouchAction;
 	
 	/**
 	 * Animations 
 	 */
+
+	void PlayCrouchAnimations();
+	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAnimMontage> AM_Throw;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAnimMontage> AM_Crouch;
+
+	
 	
 	UPROPERTY(EditAnywhere)
 	float ThrowSpeed=800;

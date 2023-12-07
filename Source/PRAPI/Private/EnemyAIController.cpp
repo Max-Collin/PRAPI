@@ -8,6 +8,7 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISense_Hearing.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionTypes.h"
 #include "Perception/AISenseConfig_Hearing.h"
 
@@ -52,14 +53,17 @@ void AEnemyAIController::OnTargetPerceptionUpdate(AActor* PerceviedActor,FAIStim
         		{
         			BlackboardComponent->SetValueAsObject("ChaseTarget",PerceviedActor);
         			BlackboardComponent->SetValueAsVector("ChaseTargetLocation",PerceviedActor->GetActorLocation());
+
+        			
+        			
         		}
         		
         	}
         	else if(Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>())
         	{
-        		UE_LOG(LogTemp,Warning,TEXT("actor heard"))
-        		BlackboardComponent->SetValueAsVector("InvestigationTarget",Stimulus.StimulusLocation);
         		
+        		BlackboardComponent->SetValueAsVector("InvestigationTarget",Stimulus.StimulusLocation);
+        		BlackboardComponent->SetValueAsObject("InvestigationTargetActor",PerceviedActor);
         	}
 	}
 	

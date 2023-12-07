@@ -19,7 +19,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ChangePatrolTarget();
-	
+
+	UFUNCTION(BlueprintCallable)
+	void playAlertSound();
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	bool PlayOnce=true;
 
 protected:
 	void BeginPlay() override;
@@ -29,7 +33,11 @@ protected:
 
 	UPROPERTY(EditInstanceOnly)
 	TArray<AActor*> PatrolTargets;
-		
+
+
+private:
+	UPROPERTY(EditAnywhere, Category = Sound)
+	USoundBase* AlertSound;
 
 public:
 	FORCEINLINE AActor* GetPatrolTarget() const {return PatrolTarget;}

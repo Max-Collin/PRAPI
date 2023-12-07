@@ -27,14 +27,15 @@ protected:
 	UPROPERTY( VisibleAnywhere, Category=Components, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UAIPerceptionStimuliSourceComponent>  AIPerceptionStimuliSourceComponent;
 
-
+	void PlayHitSound(const FVector& ImpactPoint);
 	
 	UFUNCTION()
 	void OnSphereHit(UPrimitiveComponent* HitComponent,AActor* OtherActor,UPrimitiveComponent* OtherComp,FVector NormalImpulse,const FHitResult& Hit);
 private:
 	void AttachMeshToSocket(TObjectPtr<USceneComponent>  InParent, FName InSocketName);
 	
-
+	UPROPERTY(EditAnywhere, Category = Sound)
+	USoundBase* HitSound;
 
 	bool DoOnce_Hit = false;
 	

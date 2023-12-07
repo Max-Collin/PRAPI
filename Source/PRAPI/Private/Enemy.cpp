@@ -3,6 +3,8 @@
 
 #include "Enemy.h"
 
+#include "Kismet/GameplayStatics.h"
+
 AEnemy::AEnemy()
 {
 }
@@ -15,6 +17,16 @@ void AEnemy::ChangePatrolTarget()
 		PatrolTarget = PatrolTargets[RandomPatrolTarget];
 	}
 	
+}
+
+void AEnemy::playAlertSound()
+{
+	if(AlertSound&&PlayOnce)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetOwner(),AlertSound,GetOwner()->GetActorLocation());
+
+		PlayOnce = false;
+	}
 }
 
 void AEnemy::BeginPlay()
