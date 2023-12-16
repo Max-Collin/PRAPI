@@ -11,20 +11,24 @@
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionTypes.h"
 #include "Perception/AISenseConfig_Hearing.h"
+#include "Perception/AIPerceptionSystem.h"
 
 
 AEnemyAIController::AEnemyAIController()
 {
 	SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception Component")));
+	
 	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"));
 
 	Sight=CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Config"));
+	
 	Sight->SightRadius=1000.f;
 	Sight->LoseSightRadius=1500.f;
 	Sight->PeripheralVisionAngleDegrees = 60.f;
 	Sight->DetectionByAffiliation.bDetectEnemies=true;
 	Sight->DetectionByAffiliation.bDetectNeutrals=true;
 	Sight->DetectionByAffiliation.bDetectFriendlies=true;
+	
 
 	Hear = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("Hearing Config"));
 	Hear->HearingRange=1000.f;
@@ -37,8 +41,8 @@ AEnemyAIController::AEnemyAIController()
 	AAIController::GetPerceptionComponent()->SetDominantSense(*Sight->GetSenseImplementation());
 	AAIController::GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this,&AEnemyAIController::OnTargetPerceptionUpdate);
 	
+	AAIController::GetPerceptionComponent()->OnTargetPerceptionForgotten.AddDynamic(this,&AEnemyAIController::OnPerceptionForgoten);
 	
-
 	
 }
 
@@ -66,10 +70,19 @@ void AEnemyAIController::OnTargetPerceptionUpdate(AActor* PerceviedActor,FAIStim
         		BlackboardComponent->SetValueAsObject("InvestigationTargetActor",PerceviedActor);
         	}
 	}
+	else
+	{
+	   
+	}
 	
 	
 	
 	
+}
+
+void AEnemyAIController::OnPerceptionForgoten(AActor* SourceActor)
+{
+	UE_LOG(LogTemp,Warning,TEXT("lost sight"));
 }
 
 void AEnemyAIController::BeginPlay()

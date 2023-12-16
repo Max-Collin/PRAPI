@@ -45,6 +45,8 @@ protected:
 private:
 	UFUNCTION()
 	void OnTargetPerceptionUpdate(AActor* SeenActor,FAIStimulus Stimulus);
+	UFUNCTION()
+	void OnPerceptionForgoten(AActor* SourceActor);
 
 	
 

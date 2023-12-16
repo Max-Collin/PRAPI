@@ -33,6 +33,7 @@ protected:
 	void OnSphereHit(UPrimitiveComponent* HitComponent,AActor* OtherActor,UPrimitiveComponent* OtherComp,FVector NormalImpulse,const FHitResult& Hit);
 private:
 	void AttachMeshToSocket(TObjectPtr<USceneComponent>  InParent, FName InSocketName);
+	void ResetDoOnce();
 	
 	UPROPERTY(EditAnywhere, Category = Sound)
 	USoundBase* HitSound;

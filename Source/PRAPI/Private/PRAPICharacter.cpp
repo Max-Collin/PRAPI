@@ -195,9 +195,12 @@ void APRAPICharacter::PlayCrouchAnimations()
 
 void APRAPICharacter::Throw()
 {
-		EquippedThrowable->Reset_DoOnce_Hit();
-		EquippedThrowable->DetachMeshFromSocket();
-		EquippedThrowable->GetMesh()->SetEnableGravity(true);
+	if(!EquippedThrowable)return;
+	EquippedThrowable->GetMesh()->SetSimulatePhysics(true);
+	EquippedThrowable->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	EquippedThrowable->Reset_DoOnce_Hit();
+	EquippedThrowable->DetachMeshFromSocket();
+	
 	float PlayerPitch ;
 	FVector LaunchVelocity;
 	if(GetControlRotation().Pitch>=270)
@@ -218,6 +221,7 @@ void APRAPICharacter::Throw()
 	LaunchVelocity = UnitDirection* ThrowSpeed ;
 	float PitchvelocityX =  PlayerPitch*2-FMath::Cube(PlayerPitch);
 	LaunchVelocity = FVector(LaunchVelocity.X*PitchvelocityX,LaunchVelocity.Y*PitchvelocityX,FMath::Pow(LaunchVelocity.Z,PlayerPitch));
+	
 		EquippedThrowable->GetMesh()->SetPhysicsLinearVelocity(LaunchVelocity);
 		EquippedThrowable->GetMesh()->SetEnableGravity(true);
 		EquippedThrowable = nullptr;
