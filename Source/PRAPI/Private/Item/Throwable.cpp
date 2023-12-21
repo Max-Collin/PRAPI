@@ -85,8 +85,8 @@ void AThrowable::OnSphereHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 		UAISense_Hearing::ReportNoiseEvent(this,Hit.Location,100,this,-1);
 		DoOnce_Hit = false;
 		//UE_LOG(LogTemp, Warning, TEXT("OnSphereHit called. HitComponent: %s"), *OtherActor->GetName());
-		UE_LOG(LogTemp, Warning, TEXT("OnSphereHit called. velocity %s"), *GetVelocity().ToString());
-		UE_LOG(LogTemp, Warning, TEXT("OnSphereHit called. velocity %f"), GetVelocity().Length());
+		//UE_LOG(LogTemp, Warning, TEXT("OnSphereHit called. velocity %s"), *GetVelocity().ToString());
+		//UE_LOG(LogTemp, Warning, TEXT("OnSphereHit called. velocity %f"), GetVelocity().Length());
 		PlayHitSound(Hit.Location);
 
 		FTimerHandle ResetHandle;

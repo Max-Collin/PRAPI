@@ -127,19 +127,18 @@ void APRAPICharacter::Aim()
 	if(GetControlRotation().Pitch>=270)
 	{
 		PlayerPitch = (GetControlRotation().Pitch-270)/110;
-		//FVector ForwardVector = GetCapsuleComponent()->GetForwardVector();
-		//LaunchVelocity = ForwardVector* ThrowSpeed *PlayerPitch +10 ;
 	}
 	else
 	{
 		PlayerPitch = (GetControlRotation().Pitch+90)/110;
-		
-	
 	}
+
+	
 	PlayerPitch = FMath::Clamp(PlayerPitch,0.01,1.2);
 	FVector UnitDirection =UKismetMathLibrary::GetDirectionUnitVector(GetActorLocation(),ThrowStartLocation->GetComponentLocation());
-	FVector ForwardVector = GetCapsuleComponent()->GetForwardVector();
+	//FVector ForwardVector = GetCapsuleComponent()->GetForwardVector();
 	LaunchVelocity = UnitDirection* ThrowSpeed ;
+	// 2x-x^3
 	float PitchvelocityX =  PlayerPitch*2-FMath::Cube(PlayerPitch);
 	LaunchVelocity = FVector(LaunchVelocity.X*PitchvelocityX,LaunchVelocity.Y*PitchvelocityX,FMath::Pow(LaunchVelocity.Z,PlayerPitch));
 	
